@@ -5,7 +5,6 @@ from os import environ
 import re
 import requests
 from urllib import parse
-from werkzeug.routing import NotFound
 
 app = Flask(__name__)
 api = Api(app, catch_all_404s=True)
@@ -62,7 +61,6 @@ def get_search_tag(searched_tag):
     filtered_tag_counts = [o for o in tag_counts if not re.search(hashtag_validation, o['text'])]
     filtered_tag_counts = [o for o in filtered_tag_counts if o['text'] != searched_tag]
     filtered_tag_counts = sorted(filtered_tag_counts, key=(lambda o: - o['count']))
-    return filtered_tag_counts
 
     return {
         'searchedHashtag': searched_tag,
