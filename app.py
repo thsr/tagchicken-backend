@@ -39,27 +39,34 @@ def get_search_tag(searched_tag):
                 endpoint = data['pagination']['next_url']
         else:
             break
+    tags_list = [o['tags'] for o in posts_list]
+    flat_list = [item for sublist in tags_list for item in sublist]
+
+    # API call for ig's search
+    endpoint = 'https://api.instagram.com/v1/tags/search?q=' + searched_tag + '&access_token=' + environ.get('IG_DEFAULT_ACCESS_TOKEN')
+    data = requests.get(endpoint).json()['data']
+    ig_search_tag_counts = [{'text': o['name'], 'count': o['media_count'] + 9999} for o in data]
+    ig_search_tags = [o['text'] for o in ig_search_tag_counts]
 
     # return if no posts found
-    if len(posts_list)==0:
+    if (len(posts_list)==0) & (len(ig_search_tags)==0):
         return {
             'searchedHashtag': searched_tag,
             'data': []
         }
 
     # get a count of tags
-    tags_list = list(map((lambda o: o['tags']), posts_list))
-    flat_list = [item for sublist in tags_list for item in sublist]
-    tag_counts = [{'text': x, 'count': flat_list.count(x)} for x in set(flat_list)]
+    tag_counts = ig_search_tag_counts + [{'text': o, 'count': flat_list.count(o)} for o in set(flat_list) if not o in ig_search_tags]
 
     # filter and sorted count of tags
-    # filtered_tag_counts = [tag for tag in tag_counts if tag['text'] != searched_tag]
-    # filtered_tag_counts = sorted(filtered_tag_counts, key=(lambda o: -o['count']))
-    filtered_tag_counts = sorted(tag_counts, key=(lambda o: - o['count']))
+    filtered_tag_counts = [o for o in tag_counts if not re.search(hashtag_validation, o['text'])]
+    filtered_tag_counts = [o for o in filtered_tag_counts if o['text'] != searched_tag]
+    filtered_tag_counts = sorted(filtered_tag_counts, key=(lambda o: - o['count']))
+    return filtered_tag_counts
 
     return {
         'searchedHashtag': searched_tag,
-        'data': filtered_tag_counts[1:51]
+        'data': filtered_tag_counts[:50]
     }
 
 class SearchTag(Resource):
