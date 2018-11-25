@@ -55,7 +55,7 @@ def get_search_tag(searched_tag):
         }
 
     # get a count of tags
-    tag_counts = ig_search_tag_counts + [{'text': o, 'count': flat_list.count(o)} for o in set(flat_list) if not o in ig_search_tags]
+    tag_counts = ig_search_tag_counts[:7] + [{'text': o, 'count': flat_list.count(o)} for o in set(flat_list) if not o in ig_search_tags]
 
     # filter and sorted count of tags
     filtered_tag_counts = [o for o in tag_counts if not re.search(hashtag_validation, o['text'])]
