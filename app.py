@@ -27,16 +27,15 @@ def get_search_tag(searched_tag):
     
     # chain API calls to get a few pages
     endpoint = 'https://api.instagram.com/v1/tags/' + parse.quote(searched_tag) + '/media/recent?access_token=' + environ.get('IG_DEFAULT_ACCESS_TOKEN')
-    params = { 'count': 30 }
+    params = {'count': 30}
     posts_list=[]
     for i in range(3):
         r = requests.get(endpoint, params=params)
         data = r.json()
         posts_list += data['data']
-        if hasattr(data, 'pagination'):
-            if hasattr(data['pagination'], 'next_url'):
-                endpoint = data['pagination']['next_url']
-        else:
+        try:
+            endpoint = data['pagination']['next_url']
+        except: 
             break
     tags_list = [o['tags'] for o in posts_list]
     flat_list = [item for sublist in tags_list for item in sublist]
