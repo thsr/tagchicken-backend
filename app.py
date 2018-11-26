@@ -43,7 +43,7 @@ def get_search_tag(searched_tag):
     # API call for ig's search
     endpoint = 'https://api.instagram.com/v1/tags/search?q=' + parse.quote(searched_tag) + '&access_token=' + environ.get('IG_DEFAULT_ACCESS_TOKEN')
     data = requests.get(endpoint).json()['data']
-    ig_search_tag_counts = [{'text': o['name'], 'count': o['media_count'] + 9999} for o in data]
+    ig_search_tag_counts = [{'text': o['name'], 'count': o['media_count']} for o in data if o['media_count'] > 0]
     ig_search_tags = [o['text'] for o in ig_search_tag_counts]
 
     # return if no posts found
