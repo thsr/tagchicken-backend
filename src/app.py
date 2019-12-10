@@ -1,4 +1,3 @@
-# coding=utf-8
 from flask import Flask
 from flask_restful import Resource, Api
 from os import environ
@@ -11,7 +10,7 @@ api = Api(app, catch_all_404s=True)
 
 @app.after_request
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', environ.get('ACCESS_CONTROL_ALLOW_ORIGIN_HB'))
+    response.headers.add('Access-Control-Allow-Origin', "https://tagchicken.com")
     response.headers.add('Access-Control-Allow-Methods', 'GET')
     return response
 
@@ -81,4 +80,4 @@ class SearchTag(Resource):
 api.add_resource(SearchTag, '/hb/search/<tag>')
 
 if __name__ == '__main__':
-    app.run(debug=True, port=3000)
+    app.run(host='0.0.0.0', port=3000, debug=True)
